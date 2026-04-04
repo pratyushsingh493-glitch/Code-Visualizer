@@ -3,6 +3,7 @@ import ListVisualizer from './ListVisualizer'
 import DictVisualizer from './DictVisualizer'
 import ScalarVisualizer from './ScalarVisualizer'
 import './VisualizationPanel.css'
+import ArrayVisualizer from './ArrayVisualizer'
 
 export default function VisualizationPanel({ steps, currentStep, detectedStructures, activeStep }) {
   // Group all variables at current step to get their latest values
@@ -37,39 +38,58 @@ export default function VisualizationPanel({ steps, currentStep, detectedStructu
     return map
   }, [steps, currentStep])
 
-  const renderVariable = (varInfo) => {
-    const prev = prevVariables[varInfo.variable]
-    switch (varInfo.type) {
-      case 'list':
-        return (
-          <ListVisualizer
-            key={varInfo.variable}
-            name={varInfo.variable}
-            current={varInfo.value}
-            previous={prev}
-          />
-        )
-      case 'dict':
-        return (
-          <DictVisualizer
-            key={varInfo.variable}
-            name={varInfo.variable}
-            current={varInfo.value}
-            previous={prev}
-          />
-        )
-      default:
-        return (
-          <ScalarVisualizer
-            key={varInfo.variable}
-            name={varInfo.variable}
-            type={varInfo.type}
-            current={varInfo.value}
-            previous={prev}
-          />
-        )
-    }
+ const renderVariable = (varInfo) => {
+  const prev = prevVariables[varInfo.variable]
+  const displayType = varInfo.visual_type || varInfo.type
+  const pythonType = varInfo.python_type || varInfo.type
+
+  switch (displayType) {
+    case 'array':
+  return (
+    <ArrayVisualizer
+      key={varInfo.variable}
+      name={varInfo.variable}
+      current={varInfo.value}
+      previous={prev}
+      type={displayType}
+      pythonType={pythonType}
+    />
+  )
+
+case 'list':
+  return (
+    <ListVisualizer
+      key={varInfo.variable}
+      name={varInfo.variable}
+      current={varInfo.value}
+      previous={prev}
+      type={displayType}
+      pythonType={pythonType}
+    />
+  )
+
+    case 'dict':
+      return (
+        <DictVisualizer
+          key={varInfo.variable}
+          name={varInfo.variable}
+          current={varInfo.value}
+          previous={prev}
+        />
+      )
+
+    default:
+      return (
+        <ScalarVisualizer
+          key={varInfo.variable}
+          name={varInfo.variable}
+          type={pythonType}
+          current={varInfo.value}
+          previous={prev}
+        />
+      )
   }
+}
 
   return (
     <div className="viz-panel">
