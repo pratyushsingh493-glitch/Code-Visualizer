@@ -1,39 +1,33 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from RestrictedPython import compile_restricted, safe_builtins, safe_globals
-from RestrictedPython.Eval import default_guarded_getiter
-from RestrictedPython.Guards import safe_globals as rp_safe_globals, guarded_iter_unpack_sequence
+from RestrictedPython import compile_restricted, safe_builtins, PrintCollector
+from RestrictedPython.Guards import guarded_iter_unpack_sequence
 import ast
 import sys
 import json
 import threading
+import copy
+import re
 
 app = FastAPI()
 
-# -------------------------------
-# CORS
-# -------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://code-visualizerbyinnoventures.netlify.app",
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# -------------------------------
-# Request Model
-# -------------------------------
 class CodeRequest(BaseModel):
     code: str
 
 
-# -------------------------------
-# AST Analyzer
-# Detects both literals [] and constructors list()
-# -------------------------------
 class DataStructureAnalyzer(ast.NodeVisitor):
     def __init__(self):
         self.structures = set()
@@ -61,42 +55,93 @@ class DataStructureAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-# -------------------------------
-# Helpers
-# -------------------------------
+class VariableUsageAnalyzer(ast.NodeVisitor):
+    def __init__(self):
+        self.usage = {}
+
+    def ensure_var(self, name):
+        if name not in self.usage:
+            self.usage[name] = {
+                "indexed": 0,
+                "index_assigned": 0,
+                "len_used": 0,
+                "append_used": 0,
+                "pop_used": 0,
+                "insert_used": 0,
+                "remove_used": 0,
+                "extend_used": 0,
+                "sort_used": 0,
+            }
+
+    def visit_Subscript(self, node):
+        if isinstance(node.value, ast.Name):
+            name = node.value.id
+            self.ensure_var(name)
+            self.usage[name]["indexed"] += 1
+        self.generic_visit(node)
+
+    def visit_Assign(self, node):
+        for target in node.targets:
+            if isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name):
+                name = target.value.id
+                self.ensure_var(name)
+                self.usage[name]["index_assigned"] += 1
+        self.generic_visit(node)
+
+    def visit_AugAssign(self, node):
+        if isinstance(node.target, ast.Subscript) and isinstance(node.target.value, ast.Name):
+            name = node.target.value.id
+            self.ensure_var(name)
+            self.usage[name]["index_assigned"] += 1
+        self.generic_visit(node)
+
+    def visit_Call(self, node):
+        if isinstance(node.func, ast.Name) and node.func.id == "len":
+            if node.args and isinstance(node.args[0], ast.Name):
+                name = node.args[0].id
+                self.ensure_var(name)
+                self.usage[name]["len_used"] += 1
+
+        if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            name = node.func.value.id
+            method = node.func.attr
+            self.ensure_var(name)
+
+            if method == "append":
+                self.usage[name]["append_used"] += 1
+            elif method == "pop":
+                self.usage[name]["pop_used"] += 1
+            elif method == "insert":
+                self.usage[name]["insert_used"] += 1
+            elif method == "remove":
+                self.usage[name]["remove_used"] += 1
+            elif method == "extend":
+                self.usage[name]["extend_used"] += 1
+            elif method == "sort":
+                self.usage[name]["sort_used"] += 1
+
+        self.generic_visit(node)
+
+
 def is_data_structure(val):
     return isinstance(val, (list, dict, set, tuple))
 
 
 def is_valid_variable(var):
-    # Explicit blocklist — only block known internal names
     internal_names = {
-        # RestrictedPython injected names
-        "object",
-        "args",
-        "kwargs",
-        "_getiter_",
-        "_getitem_",
-        "_write_",
-        "_inplacevar_",
-        "__builtins__",
-        "__metaclass__",
-
-        # Python module-level internals
-        "__name__",
-        "__doc__",
-        "__package__",
-        "__loader__",
-        "__spec__",
-        "__file__",
-        "__cached__",
+        "object", "args", "kwargs",
+        "_getiter_", "_getitem_", "_write_", "_inplacevar_",
+        "_iter_unpack_sequence_", "_unpack_sequence_",
+        "_print_", "_getattr_",
+        "__builtins__", "__metaclass__",
+        "__name__", "__doc__", "__package__",
+        "__loader__", "__spec__", "__file__", "__cached__",
+        "output_buffer",
     }
 
     if var in internal_names:
         return False
 
-    # Block single underscore prefix — temp/private vars
-    # Do NOT block double underscore — needed by Python internals
     if var.startswith("_") and not var.startswith("__"):
         return False
 
@@ -104,10 +149,6 @@ def is_valid_variable(var):
 
 
 def make_snapshot(val):
-    """
-    Converts a value to a stable string for fast comparison.
-    Used only for detecting changes — not sent to frontend.
-    """
     try:
         if isinstance(val, set):
             return json.dumps(sorted(list(val), key=str))
@@ -120,12 +161,291 @@ def make_snapshot(val):
 
 
 def serialize_value(val):
-    """
-    Converts value to a JSON-safe format for the frontend.
-    Sets and tuples become lists so frontend bar graph can use them directly.
-    """
     if isinstance(val, (set, tuple)):
         return list(val)
     return val
 
 
+def normalize_python_type(val):
+    if isinstance(val, list):
+        return "list"
+    if isinstance(val, dict):
+        return "dict"
+    if isinstance(val, set):
+        return "set"
+    if isinstance(val, tuple):
+        return "tuple"
+    return type(val).__name__
+
+
+def detect_visual_type(var_name, value, usage_map):
+    python_type = normalize_python_type(value)
+
+    if python_type != "list":
+        return python_type
+
+    usage = usage_map.get(var_name, {})
+
+    array_score = (
+        usage.get("indexed", 0)
+        + usage.get("index_assigned", 0)
+        + usage.get("len_used", 0)
+    )
+
+    list_score = (
+        usage.get("append_used", 0)
+        + usage.get("pop_used", 0)
+        + usage.get("insert_used", 0)
+        + usage.get("remove_used", 0)
+        + usage.get("extend_used", 0)
+    )
+
+    if array_score > list_score:
+        return "array"
+    if list_score > array_score:
+        return "list"
+
+    return "array"
+
+
+def make_tracer(execution_log, previous_state, user_code, usage_map):
+    total_lines = len(user_code.splitlines())
+
+    def log_current_state(frame, current_line):
+        current_vars = frame.f_locals.copy()
+
+        # track self.attr style instance attributes
+        if "self" in current_vars:
+            self_obj = current_vars["self"]
+            if hasattr(self_obj, "__dict__"):
+                for attr, value in self_obj.__dict__.items():
+                    if not is_valid_variable(attr):
+                        continue
+                    if is_data_structure(value):
+                        key = f"self.{attr}"
+                        current_snap = make_snapshot(value)
+                        if key not in previous_state:
+                            previous_state[key] = current_snap
+                            execution_log.append({
+                                "line": current_line,
+                                "variable": key,
+                                "python_type": normalize_python_type(value),
+                                "visual_type": detect_visual_type(attr, value, usage_map),
+                                "value": copy.deepcopy(serialize_value(value))
+                            })
+                        elif previous_state[key] != current_snap:
+                            execution_log.append({
+                                "line": current_line,
+                                "variable": key,
+                                "python_type": normalize_python_type(value),
+                                "visual_type": detect_visual_type(attr, value, usage_map),
+                                "value": copy.deepcopy(serialize_value(value))
+                            })
+                            previous_state[key] = current_snap
+
+        # track regular variables
+        for var, value in current_vars.items():
+            if not is_valid_variable(var):
+                continue
+
+            if is_data_structure(value):
+                current_snap = make_snapshot(value)
+                prev_snap = previous_state.get(var)
+
+                if var not in previous_state:
+                    previous_state[var] = current_snap
+                    execution_log.append({
+                        "line": current_line,
+                        "variable": var,
+                        "python_type": normalize_python_type(value),
+                        "visual_type": detect_visual_type(var, value, usage_map),
+                        "value": copy.deepcopy(serialize_value(value))
+                    })
+                    continue
+
+                if prev_snap != current_snap:
+                    execution_log.append({
+                        "line": current_line,
+                        "variable": var,
+                        "python_type": normalize_python_type(value),
+                        "visual_type": detect_visual_type(var, value, usage_map),
+                        "value": copy.deepcopy(serialize_value(value))
+                    })
+                    previous_state[var] = current_snap
+
+    def trace(frame, event, arg):
+        if frame.f_code.co_filename != "<user_code>":
+            return trace
+
+        if event == "line":
+            current_line = frame.f_lineno
+            if current_line <= total_lines:
+                log_current_state(frame, current_line)
+
+        elif event == "return":
+            current_line = frame.f_lineno
+            if current_line <= total_lines:
+                log_current_state(frame, current_line)
+
+        return trace
+
+    return trace
+
+
+def rewrite_augmented_subscript(code):
+    op_map = {
+        "+=": "+", "-=": "-", "*=": "*", "/=": "/",
+        "%=": "%", "**=": "**", "//=": "//",
+        "&=": "&", "|=": "|", "^=": "^",
+    }
+    pattern = re.compile(
+        r'^(\s*)(\w+)\[([^\]]+)\]\s*(\*\*=|//=|[+\-*/%&|^]=)\s*(.+)$',
+        re.MULTILINE
+    )
+
+    def replacer(match):
+        indent, var, key, op, value = match.groups()
+        plain_op = op_map[op]
+        return f"{indent}{var}[{key}] = {var}[{key}] {plain_op} {value}"
+
+    return pattern.sub(replacer, code)
+
+
+def build_restricted_globals():
+
+    def _write_(ob):
+        if isinstance(ob, (list, dict, set)):
+            return ob
+        return ob
+
+    def _getiter_(ob):
+        return iter(ob)
+
+    def _getitem_(ob, index):
+        return ob[index]
+
+    def _inplacevar_(op, x, y):
+        ops = {
+            "+=":  lambda: x + y,
+            "-=":  lambda: x - y,
+            "*=":  lambda: x * y,
+            "/=":  lambda: x / y,
+            "%=":  lambda: x % y,
+            "**=": lambda: x ** y,
+            "//=": lambda: x // y,
+            "&=":  lambda: x & y,
+            "|=":  lambda: x | y,
+            "^=":  lambda: x ^ y,
+        }
+        if op in ops:
+            return ops[op]()
+        raise ValueError(f"Unsupported operator: {op}")
+
+    def _unpack_sequence_(sequence, expected_length, *args):
+        sequence = list(sequence)
+        return sequence
+
+    restricted_builtins = safe_builtins.copy()
+
+    return {
+        "__name__": "__main__",
+        "__doc__": None,
+        "__package__": None,
+        "__metaclass__": type,
+        "__builtins__": restricted_builtins,
+
+        "_write_": _write_,
+        "_getiter_": _getiter_,
+        "_getitem_": _getitem_,
+        "_inplacevar_": _inplacevar_,
+        "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
+        "_unpack_sequence_": _unpack_sequence_,
+        "_print_": PrintCollector,
+        "_getattr_": getattr,
+        "__build_class__": __build_class__,
+
+        "list": list, "dict": dict, "set": set, "tuple": tuple,
+        "len": len, "range": range, "enumerate": enumerate,
+        "zip": zip, "map": map, "filter": filter,
+        "sorted": sorted, "reversed": reversed,
+        "sum": sum, "min": min, "max": max,
+        "abs": abs, "round": round,
+        "isinstance": isinstance, "type": type,
+        "str": str, "int": int, "float": float, "bool": bool,
+    }
+
+
+def analyze_and_execute(code):
+
+    execution_log = []
+    previous_state = {}
+    output_buffer = []
+
+    code = rewrite_augmented_subscript(code)
+
+    try:
+        tree = ast.parse(code)
+
+        analyzer = DataStructureAnalyzer()
+        analyzer.visit(tree)
+
+        usage_analyzer = VariableUsageAnalyzer()
+        usage_analyzer.visit(tree)
+        usage_map = usage_analyzer.usage
+
+    except SyntaxError as e:
+        return {"error": f"Syntax Error at line {e.lineno}: {e.msg}"}
+    except Exception as e:
+        return {"error": f"Parse Error: {str(e)}"}
+
+    try:
+        byte_code = compile_restricted(code, filename="<user_code>", mode="exec")
+    except SyntaxError as e:
+        return {"error": f"Restricted Syntax Error: {str(e)}"}
+
+    restricted_globals = build_restricted_globals()
+    execution_result = {"error": None}
+
+    def run():
+        try:
+            tracer = make_tracer(execution_log, previous_state, code, usage_map)
+            sys.settrace(tracer)
+            exec(byte_code, restricted_globals)
+            sys.settrace(None)
+
+            # collect print output from PrintCollector
+            printer = restricted_globals.get("_print_")
+            if printer is not None:
+                if hasattr(printer, "txt"):
+                    for line in printer.txt:
+                        output_buffer.append(line.rstrip("\n"))
+                elif not isinstance(printer, type):
+                    text = str(printer)
+                    if text:
+                        for line in text.splitlines():
+                            output_buffer.append(line)
+
+        except Exception as e:
+            sys.settrace(None)
+            execution_result["error"] = f"Runtime Error: {str(e)}"
+
+    thread = threading.Thread(target=run)
+    thread.start()
+    thread.join(timeout=5)
+
+    if thread.is_alive():
+        return {"error": "Execution timeout (possible infinite loop)"}
+
+    if execution_result["error"]:
+        return {"error": execution_result["error"]}
+
+    return {
+        "detected_structures": list(analyzer.structures),
+        "execution": execution_log,
+        "output": output_buffer
+    }
+
+
+@app.post("/run-code")
+def run_code(request: CodeRequest):
+    return analyze_and_execute(request.code)
