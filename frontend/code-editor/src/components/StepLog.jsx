@@ -7,7 +7,23 @@ export default function StepLog({ steps, currentStep, onJumpTo }) {
 
   useEffect(() => {
     if (activeRef.current && containerRef.current) {
-      activeRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      const container = containerRef.current
+      const item = activeRef.current
+      
+      const itemTop = item.offsetTop
+      const itemBottom = itemTop + item.offsetHeight
+      
+      const containerTop = container.scrollTop
+      const containerBottom = containerTop + container.clientHeight
+      
+      // If item is out of view (either above or below)
+      if (itemBottom > containerBottom || itemTop < containerTop) {
+        // Scroll so the active item is positioned in the middle of the list
+        container.scrollTo({
+          top: itemTop - (container.clientHeight / 2) + (item.offsetHeight / 2),
+          behavior: 'smooth'
+        })
+      }
     }
   }, [currentStep])
 

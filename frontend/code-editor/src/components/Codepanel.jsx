@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import './Codepanel.css'
 
-export default function Codepanel({ code, onChange, activeLine, onVisualize, isLoading }) {
+export default function Codepanel({ code, onChange, activeLine, onVisualize, isLoading, onExplain, explainLoading }) {
   const textareaRef = useRef(null)
   const highlightRef = useRef(null)
 
@@ -82,23 +82,44 @@ export default function Codepanel({ code, onChange, activeLine, onVisualize, isL
 
       <div className="editor-footer">
         <span className="footer-info">Python 3 · UTF-8</span>
-        <button
-          className={`visualize-btn ${isLoading ? 'loading' : ''}`}
-          onClick={onVisualize}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <span className="btn-spinner" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <span className="btn-icon">▶</span>
-              Visualize
-            </>
-          )}
-        </button>
+        <div className="footer-actions">
+          <button
+            className={`explain-btn ${explainLoading ? 'loading' : ''}`}
+            onClick={onExplain}
+            disabled={explainLoading || isLoading}
+            title="Explain code with Gemini AI"
+          >
+            {explainLoading ? (
+              <>
+                <span className="btn-spinner" />
+                Explaining...
+              </>
+            ) : (
+              <>
+                <span className="btn-icon">✦</span>
+                Explain
+              </>
+            )}
+          </button>
+          
+          <button
+            className={`visualize-btn ${isLoading ? 'loading' : ''}`}
+            onClick={onVisualize}
+            disabled={isLoading || explainLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="btn-spinner" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <span className="btn-icon">▶</span>
+                Visualize
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )

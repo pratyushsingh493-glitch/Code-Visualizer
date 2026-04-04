@@ -35,6 +35,7 @@
 .step-log-list {
   overflow-y: auto;
   flex: 1;
+  position: relative;
 }
 
 .step-log-item {
