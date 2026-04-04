@@ -5,7 +5,7 @@
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--border);
-  background: #ffffff;
+  background: #393E46;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -33,7 +33,7 @@
   font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: var(--text-primary);
+  color: white;
 }
 
 .header-tagline {
