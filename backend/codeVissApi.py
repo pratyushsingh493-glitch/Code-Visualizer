@@ -8,6 +8,7 @@ import sys
 import json
 import threading
 import copy
+import re
 
 app = FastAPI()
 
@@ -259,6 +260,29 @@ def make_tracer(execution_log, previous_state, user_code, usage_map):
     return trace
 
 
+def rewrite_augmented_subscript(code):
+    """
+    Rewrites augmented assignment on subscripts before restricted compilation.
+    e.g. freq[num] += 1  -->  freq[num] = freq[num] + 1
+    """
+    op_map = {
+        "+=": "+", "-=": "-", "*=": "*", "/=": "/",
+        "%=": "%", "**=": "**", "//=": "//",
+        "&=": "&", "|=": "|", "^=": "^",
+    }
+    pattern = re.compile(
+        r'^(\s*)(\w+)\[([^\]]+)\]\s*(\*\*=|//=|[+\-*/%&|^]=)\s*(.+)$',
+        re.MULTILINE
+    )
+
+    def replacer(match):
+        indent, var, key, op, value = match.groups()
+        plain_op = op_map[op]
+        return f"{indent}{var}[{key}] = {var}[{key}] {plain_op} {value}"
+
+    return pattern.sub(replacer, code)
+
+
 def build_restricted_globals(output_buffer):
 
     def _write_(ob):
@@ -289,7 +313,6 @@ def build_restricted_globals(output_buffer):
             return ops[op]()
         raise ValueError(f"Unsupported operator: {op}")
 
-    # Handles tuple unpacking: a, b = b, a
     def _unpack_sequence_(sequence, expected_length, *args):
         sequence = list(sequence)
         return sequence
@@ -312,7 +335,7 @@ def build_restricted_globals(output_buffer):
         "_getitem_": _getitem_,
         "_inplacevar_": _inplacevar_,
         "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
-        "_unpack_sequence_": _unpack_sequence_,   # <-- fixes tuple swap
+        "_unpack_sequence_": _unpack_sequence_,
 
         "list": list, "dict": dict, "set": set, "tuple": tuple,
         "len": len, "range": range, "enumerate": enumerate,
@@ -332,6 +355,9 @@ def analyze_and_execute(code):
     execution_log = []
     previous_state = {}
     output_buffer = []
+
+    # Rewrite augmented subscript assignments before restricted compilation
+    code = rewrite_augmented_subscript(code)
 
     try:
         tree = ast.parse(code)
