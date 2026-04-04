@@ -1,0 +1,108 @@
+
+> code-editor@0.0.0 lint
+> eslint .
+
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\ArrayVisualizer.jsx
+  19:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  17 |   useEffect(() => {
+  18 |     if (changedIndices.length > 0) {
+> 19 |       setAnimating(changedIndices)
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  20 |       const timer = setTimeout(() => {
+  21 |         setAnimating([])
+  22 |       }, 700)  react-hooks/set-state-in-effect
+  25:6  warning  React Hook useEffect has a missing dependency: 'changedIndices'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+  25:7  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\Codepanel.jsx
+  1:25  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\DictVisualizer.jsx
+  13:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  11 |     )
+  12 |     if (changed.length) {
+> 13 |       setChangedKeys(changed)
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |       const t = setTimeout(() => setChangedKeys([]), 900)
+  15 |       return () => clearTimeout(t)
+  16 |     }  react-hooks/set-state-in-effect
+  17:6  warning  React Hook useEffect has missing dependencies: 'current' and 'previous'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  17:7  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\ListVisualizer.jsx
+  20:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  18 |   useEffect(() => {
+  19 |     if (changedIndices.length > 0) {
+> 20 |       setSwapPair(changedIndices)
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  21 |       setAnimating(changedIndices)
+  22 |       const timer = setTimeout(() => {
+  23 |         setAnimating([])  react-hooks/set-state-in-effect
+  28:6  warning  React Hook useEffect has a missing dependency: 'changedIndices'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  28:7  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\ScalarVisualizer.jsx
+   9:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   7 |   useEffect(() => {
+   8 |     if (previous !== undefined && previous !== current) {
+>  9 |       setFlash(true)
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  10 |       const t = setTimeout(() => setFlash(false), 800)
+  11 |       return () => clearTimeout(t)
+  12 |     }  react-hooks/set-state-in-effect
+  13:6  warning  React Hook useEffect has a missing dependency: 'previous'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\SetVisualizer.jsx
+  42:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  40 |   useEffect(() => {
+  41 |     if (added.length > 0 || removed.length > 0) {
+> 42 |       setAnimatingAdded(added)
+     |       ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |       setAnimatingRemoved(removed)
+  44 |
+  45 |       const timer = setTimeout(() => {  react-hooks/set-state-in-effect
+  52:6   warning  React Hook useEffect has missing dependencies: 'added' and 'removed'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  52:7   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  52:32  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+
+C:\Users\veer\Documents\coding\hackathon\Code-Visualizer\frontend\code-editor\src\components\VisulizationPanel.jsx
+  8:25  error  Parsing error: Identifier 'VisualizationPanel' has already been declared
+
+✖ 17 problems (7 errors, 10 warnings)
+

@@ -1,33 +1,35 @@
+/* Step log stays dark — it's inside the code editor panel */
 .step-log {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--border);
-  max-height: 240px;
+  border-top: 1px solid var(--editor-border);
+  max-height: 220px;
   flex-shrink: 0;
+  background: var(--editor-bg);
 }
 
 .step-log-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: var(--bg-deep);
-  border-bottom: 1px solid var(--border);
+  padding: 7px 16px;
+  background: var(--editor-bg-deep);
+  border-bottom: 1px solid var(--editor-border);
   flex-shrink: 0;
 }
 
 .step-log-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--editor-muted);
 }
 
 .step-log-count {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 10px;
+  color: var(--editor-muted);
 }
 
 .step-log-list {
@@ -39,7 +41,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 6px 16px;
+  padding: 5px 16px;
   cursor: pointer;
   transition: background var(--transition);
   border-left: 2px solid transparent;
@@ -50,30 +52,23 @@
 }
 
 .step-log-item.active {
-  background: rgba(0, 217, 255, 0.04);
-  border-left-color: var(--accent-cyan);
+  background: rgba(212, 166, 74, 0.06);
+  border-left-color: #d4a64a;
 }
 
-.step-log-item.done {
-  opacity: 0.5;
-}
+.step-log-item.done { opacity: 0.45; }
 
 .step-log-icon {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-muted);
+  color: var(--editor-muted);
   margin-top: 3px;
   width: 10px;
   flex-shrink: 0;
 }
 
-.step-log-item.active .step-log-icon {
-  color: var(--accent-cyan);
-}
-
-.step-log-item.done .step-log-icon {
-  color: var(--accent-green);
-}
+.step-log-item.active .step-log-icon { color: #d4a64a; }
+.step-log-item.done .step-log-icon { color: #6fad7b; }
 
 .step-log-content {
   flex: 1;
@@ -90,8 +85,8 @@
 .step-log-line {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--accent-orange);
-  background: rgba(255,123,53,0.08);
+  color: #d4a64a;
+  background: rgba(212, 166, 74, 0.08);
   padding: 0 4px;
   border-radius: 3px;
 }
@@ -100,14 +95,14 @@
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--editor-text);
 }
 
 .step-log-type {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  color: var(--editor-muted);
+  border: 1px solid var(--editor-border);
   padding: 0 4px;
   border-radius: 3px;
 }
@@ -115,7 +110,7 @@
 .step-log-value {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--text-secondary);
+  color: #a09d98;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -123,5 +118,5 @@
 }
 
 .step-log-item.active .step-log-value {
-  color: var(--accent-cyan);
+  color: #d4a64a;
 }

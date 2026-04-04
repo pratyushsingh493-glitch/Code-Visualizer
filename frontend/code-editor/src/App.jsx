@@ -15,8 +15,7 @@ for i in range(n):
             temp = arr[j]
             arr[j] = arr[j + 1]
             arr[j + 1] = temp
-
-print(arr)`
+`
 
 const API_URL = 'https://codevisualized-api.onrender.com/run-code'  // Change to your backend URL
 
@@ -103,7 +102,7 @@ export default function App() {
 
       <main className="app-main">
         <div className="left-panel">
-          <CodeEditor
+          <Codepanel
             code={code}
             onChange={setCode}
             activeLine={activeStep?.line}

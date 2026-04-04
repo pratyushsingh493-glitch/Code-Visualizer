@@ -2,36 +2,35 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   animation: fade-in 0.3s ease;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 .scalar-viz.flashing {
-  border-color: var(--accent-orange);
-  box-shadow: 0 0 16px rgba(255, 123, 53, 0.2);
-  animation: cell-swap 0.4s ease;
+  border-color: var(--accent-amber);
+  animation: cell-swap 0.35s ease;
 }
 
 .scalar-value {
   font-family: var(--font-mono);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
 }
 
-.color-cyan   { color: var(--accent-cyan); }
-.color-purple { color: var(--accent-purple); }
+.color-cyan   { color: var(--accent-blue); }
+.color-purple { color: var(--accent-lavender); }
 .color-green  { color: var(--accent-green); }
-.color-red    { color: var(--accent-red); }
+.color-red    { color: var(--accent-coral); }
 
-.var-type-badge.type-cyan   { border-color: rgba(0,217,255,0.3);   color: var(--accent-cyan);   background: rgba(0,217,255,0.06); }
-.var-type-badge.type-purple { border-color: rgba(168,85,247,0.3);  color: var(--accent-purple); background: rgba(168,85,247,0.06); }
-.var-type-badge.type-green  { border-color: rgba(57,255,133,0.3);  color: var(--accent-green);  background: rgba(57,255,133,0.06); }
-.var-type-badge.type-red    { border-color: rgba(255,71,87,0.3);   color: var(--accent-red);    background: rgba(255,71,87,0.06); }
+.var-type-badge.type-cyan   { border-color: rgba(74, 127, 160, 0.3); color: var(--accent-blue);     background: rgba(74, 127, 160, 0.06); }
+.var-type-badge.type-purple { border-color: rgba(122, 106, 172, 0.3); color: var(--accent-lavender); background: rgba(122, 106, 172, 0.06); }
+.var-type-badge.type-green  { border-color: rgba(61, 138, 82, 0.3); color: var(--accent-green);    background: rgba(61, 138, 82, 0.06); }
+.var-type-badge.type-red    { border-color: rgba(192, 96, 78, 0.3); color: var(--accent-coral);    background: rgba(192, 96, 78, 0.06); }
 
 .scalar-prev {
   font-family: var(--font-mono);
@@ -40,7 +39,7 @@
 }
 
 .scalar-prev span {
-  color: var(--accent-orange);
+  color: var(--accent-coral);
   text-decoration: line-through;
-  text-decoration-color: rgba(255,123,53,0.5);
+  text-decoration-color: rgba(192, 96, 78, 0.4);
 }

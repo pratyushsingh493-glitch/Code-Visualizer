@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef } from 'react'
 import './Codepanel.css'
 
 export default function Codepanel({ code, onChange, activeLine, onVisualize, isLoading }) {
