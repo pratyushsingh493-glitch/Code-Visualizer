@@ -1,0 +1,72 @@
+.array-viz {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.var-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.var-name {
+  color: #f9fafb;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.var-type-badge {
+  background: #1f2937;
+  color: #93c5fd;
+  border: 1px solid #3b82f6;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.var-length {
+  color: #d1d5db;
+  font-size: 13px;
+}
+
+.array-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.array-cell {
+  width: 64px;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1f2937;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.array-cell-changed {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45);
+}
+
+.array-index {
+  background: #374151;
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #4b5563;
+}
+
+.array-value {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  padding: 14px 0;
+}
