@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import ListVisualizer from './ListVisualizer'
 import DictVisualizer from './DictVisualizer'
-import ScalarVisualizer from './ScalarVisualizer'
-import './VisualizationPanel.css'
+// import ScalarVisualizer from './ScalarVisualizer'
+import VisualizationPanel from './VisulizationPanel.css'
 import ArrayVisualizer from './ArrayVisualizer'
 
 export default function VisualizationPanel({ steps, currentStep, detectedStructures, activeStep }) {

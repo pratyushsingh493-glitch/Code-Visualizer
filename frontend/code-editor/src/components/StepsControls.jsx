@@ -1,5 +1,5 @@
 import React from 'react'
-import './StepControls.css'
+import './StepsControl.css'
 
 const SPEEDS = [
   { label: '0.5×', value: 1600 },
