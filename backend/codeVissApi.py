@@ -1,11 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< HEAD
 from RestrictedPython import compile_restricted, safe_builtins, PrintCollector
-=======
-from RestrictedPython import compile_restricted, safe_builtins
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
 from RestrictedPython.Guards import guarded_iter_unpack_sequence
 import ast
 import sys
@@ -136,17 +132,11 @@ def is_valid_variable(var):
         "object", "args", "kwargs",
         "_getiter_", "_getitem_", "_write_", "_inplacevar_",
         "_iter_unpack_sequence_", "_unpack_sequence_",
-<<<<<<< HEAD
         "_print_", "_getattr_",
         "__builtins__", "__metaclass__",
         "__name__", "__doc__", "__package__",
         "__loader__", "__spec__", "__file__", "__cached__",
         "output_buffer",
-=======
-        "__builtins__", "__metaclass__",
-        "__name__", "__doc__", "__package__",
-        "__loader__", "__spec__", "__file__", "__cached__",
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
     }
 
     if var in internal_names:
@@ -224,7 +214,6 @@ def make_tracer(execution_log, previous_state, user_code, usage_map):
     def log_current_state(frame, current_line):
         current_vars = frame.f_locals.copy()
 
-<<<<<<< HEAD
         # track self.attr style instance attributes
         if "self" in current_vars:
             self_obj = current_vars["self"]
@@ -255,8 +244,6 @@ def make_tracer(execution_log, previous_state, user_code, usage_map):
                             previous_state[key] = current_snap
 
         # track regular variables
-=======
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
         for var, value in current_vars.items():
             if not is_valid_variable(var):
                 continue
@@ -306,13 +293,6 @@ def make_tracer(execution_log, previous_state, user_code, usage_map):
 
 
 def rewrite_augmented_subscript(code):
-<<<<<<< HEAD
-=======
-    """
-    Rewrites augmented assignment on subscripts before restricted compilation.
-    e.g. freq[num] += 1  -->  freq[num] = freq[num] + 1
-    """
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
     op_map = {
         "+=": "+", "-=": "-", "*=": "*", "/=": "/",
         "%=": "%", "**=": "**", "//=": "//",
@@ -331,11 +311,7 @@ def rewrite_augmented_subscript(code):
     return pattern.sub(replacer, code)
 
 
-<<<<<<< HEAD
 def build_restricted_globals():
-=======
-def build_restricted_globals(output_buffer):
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
 
     def _write_(ob):
         if isinstance(ob, (list, dict, set)):
@@ -369,15 +345,7 @@ def build_restricted_globals(output_buffer):
         sequence = list(sequence)
         return sequence
 
-<<<<<<< HEAD
     restricted_builtins = safe_builtins.copy()
-=======
-    def safe_print(*args, **kwargs):
-        output_buffer.append(" ".join(map(str, args)))
-
-    restricted_builtins = safe_builtins.copy()
-    restricted_builtins["print"] = safe_print
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
 
     return {
         "__name__": "__main__",
@@ -392,12 +360,9 @@ def build_restricted_globals(output_buffer):
         "_inplacevar_": _inplacevar_,
         "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
         "_unpack_sequence_": _unpack_sequence_,
-<<<<<<< HEAD
         "_print_": PrintCollector,
         "_getattr_": getattr,
         "__build_class__": __build_class__,
-=======
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
 
         "list": list, "dict": dict, "set": set, "tuple": tuple,
         "len": len, "range": range, "enumerate": enumerate,
@@ -407,11 +372,6 @@ def build_restricted_globals(output_buffer):
         "abs": abs, "round": round,
         "isinstance": isinstance, "type": type,
         "str": str, "int": int, "float": float, "bool": bool,
-<<<<<<< HEAD
-=======
-
-        "print": safe_print,
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
     }
 
 
@@ -421,10 +381,6 @@ def analyze_and_execute(code):
     previous_state = {}
     output_buffer = []
 
-<<<<<<< HEAD
-=======
-    # Rewrite augmented subscript assignments before restricted compilation
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
     code = rewrite_augmented_subscript(code)
 
     try:
@@ -447,11 +403,7 @@ def analyze_and_execute(code):
     except SyntaxError as e:
         return {"error": f"Restricted Syntax Error: {str(e)}"}
 
-<<<<<<< HEAD
     restricted_globals = build_restricted_globals()
-=======
-    restricted_globals = build_restricted_globals(output_buffer)
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
     execution_result = {"error": None}
 
     def run():
@@ -460,7 +412,6 @@ def analyze_and_execute(code):
             sys.settrace(tracer)
             exec(byte_code, restricted_globals)
             sys.settrace(None)
-<<<<<<< HEAD
 
             # collect print output from PrintCollector
             printer = restricted_globals.get("_print_")
@@ -474,8 +425,6 @@ def analyze_and_execute(code):
                         for line in text.splitlines():
                             output_buffer.append(line)
 
-=======
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
         except Exception as e:
             sys.settrace(None)
             execution_result["error"] = f"Runtime Error: {str(e)}"
@@ -499,8 +448,4 @@ def analyze_and_execute(code):
 
 @app.post("/run-code")
 def run_code(request: CodeRequest):
-<<<<<<< HEAD
     return analyze_and_execute(request.code)
-=======
-    return analyze_and_execute(request.code)
->>>>>>> 1ff448caf492311727da5174ff8eb7b03033b4f8
