@@ -1,0 +1,122 @@
+.array-viz {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  animation: fade-in 0.3s ease;
+}
+
+.array-viz .var-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.array-viz .var-name {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.array-viz .var-type-badge {
+  font-family: var(--font-mono);
+  background: rgba(122, 106, 172, 0.08);
+  color: var(--accent-lavender);
+  border: 1px solid rgba(122, 106, 172, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.array-viz .var-length {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.array-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 8px;
+  padding-top: 8px;
+}
+
+.array-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.bar-graph-area {
+  height: 70px;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+}
+
+.bar {
+  width: 28px;
+  background: linear-gradient(180deg, var(--accent-blue) 0%, #3a6a87 100%);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+  transform-origin: bottom;
+}
+
+.bar.bar-changed {
+  background: linear-gradient(180deg, var(--accent-amber) 0%, #a07520 100%);
+  animation: barPulse 0.5s forwards;
+}
+
+.bar.bar-negative {
+  background: linear-gradient(180deg, var(--accent-coral) 0%, #994a3d 100%);
+}
+
+.bar.bar-negative.bar-changed {
+  background: linear-gradient(180deg, #d07868 0%, var(--accent-coral) 100%);
+}
+
+@keyframes barPulse {
+  0%   { filter: brightness(1);   transform: scaleY(1); }
+  50%  { filter: brightness(1.1); transform: scaleY(1.03); }
+  100% { filter: brightness(1);   transform: scaleY(1); }
+}
+
+.array-cell {
+  width: 56px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.array-cell-changed {
+  transform: scale(1.04);
+  border-color: var(--accent-amber);
+}
+
+.array-index {
+  background: var(--bg-deep);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.array-value {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 0;
+}

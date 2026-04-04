@@ -1,0 +1,222 @@
+/* Code panel stays dark — standard for editors */
+.code-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: #222831;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--editor-border);
+  background: var(--editor-bg-deep);
+  flex-shrink: 0;
+}
+
+.editor-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-filename {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--editor-muted);
+}
+
+.active-line-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #d4a64a;
+  background: rgba(212, 166, 74, 0.1);
+  border: 1px solid rgba(212, 166, 74, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.active-line-badge span { font-weight: 700; }
+
+.editor-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.line-numbers {
+  width: 42px;
+  flex-shrink: 0;
+  padding: 14px 0;
+  text-align: right;
+  background: var(--editor-bg-deep);
+  border-right: 1px solid var(--editor-border);
+  overflow: hidden;
+  user-select: none;
+}
+
+.line-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 22px;
+  padding-right: 10px;
+  color: var(--editor-muted);
+  transition: color var(--transition);
+}
+
+.line-num.active {
+  color: #d4a64a;
+  font-weight: 600;
+}
+
+.code-area-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.line-highlight-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 14px 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.line-highlight-row {
+  height: 22px;
+  transition: background var(--transition);
+}
+
+.line-highlight-row.active {
+  background: rgba(212, 166, 74, 0.08);
+  border-left: 2px solid #d4a64a;
+}
+
+.code-textarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--editor-text);
+  caret-color: #d4a64a;
+  overflow: auto;
+  tab-size: 4;
+  white-space: pre;
+  z-index: 2;
+}
+
+.code-textarea::placeholder {
+  color: var(--editor-muted);
+}
+
+.editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-top: 1px solid var(--editor-border);
+  background: var(--editor-bg-deep);
+  flex-shrink: 0;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-info {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--editor-muted);
+}
+
+.visualize-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--accent-amber);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.visualize-btn:hover:not(:disabled) {
+  background: #cf9025;
+  transform: translateY(-1px);
+}
+
+.visualize-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.visualize-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.explain-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.explain-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+}
+
+.explain-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.explain-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-icon { font-size: 10px; }
+
+.btn-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255
+
+
+,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}

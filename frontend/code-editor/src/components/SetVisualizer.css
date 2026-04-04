@@ -1,0 +1,132 @@
+.set-viz {
+  background: #DFD0B8;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  animation: fade-in 0.3s ease;
+}
+
+.set-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.set-name {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.set-type-badge {
+  font-family: var(--font-mono);
+  background: rgba(122, 106, 172, 0.08);
+  color: var(--accent-lavender);
+  border: 1px solid rgba(122, 106, 172, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.set-length {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.set-change-summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.set-added-text { color: var(--accent-green); font-weight: 600; }
+.set-removed-text { color: var(--accent-coral); font-weight: 600; }
+
+.set-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  overflow-x: auto;
+}
+
+.set-brace {
+  color: var(--text-muted);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.set-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+}
+
+.set-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.set-item {
+  min-width: 38px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.set-item-added {
+  border-color: var(--accent-green);
+  transform: scale(1.04);
+}
+
+.set-item.removed {
+  border-color: var(--accent-coral);
+  color: var(--accent-coral);
+  background: rgba(192, 96, 78, 0.05);
+}
+
+.set-removed-box {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: rgba(192, 96, 78, 0.04);
+  border: 1px solid rgba(192, 96, 78, 0.12);
+}
+
+.set-removed-label {
+  display: block;
+  color: var(--accent-coral);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.set-removed-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

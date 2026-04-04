@@ -1,0 +1,106 @@
+
+.viz-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  min-height: 0; /* Critical for flex child overflow tracking */
+}
+
+.viz-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viz-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.viz-meta {
+  display: flex;
+  gap: 6px;
+}
+
+.structure-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(122, 106, 172, 0.08);
+  border: 1px solid rgba(122, 106, 172, 0.2);
+  color: var(--accent-lavender);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.step-info-banner {
+  display: flex;
+  gap: 22px;
+  padding: 11px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  animation: fade-in 0.3s ease;
+}
+
+.step-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-info-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.step-info-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.step-info-value.cyan   { color: var(--accent-blue); }
+.step-info-value.orange { color: var(--accent-amber); }
+.step-info-value.green  { color: var(--accent-green); }
+
+.viz-variables {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* space for scrollbar padding */
+  padding-bottom: 20px; /* some padding at the bottom so elements don't get stuck closely above stepcontrols */
+}
+
+/* Custom scrollbar for variables so it looks sleek */
+.viz-variables::-webkit-scrollbar {
+  width: 6px;
+}
+.viz-variables::-webkit-scrollbar-track {
+  background: transparent;
+}
+.viz-variables::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+.viz-variables::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+.viz-empty {
+  text-align: center;
+  padding: 40px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+}
